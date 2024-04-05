@@ -1,0 +1,6 @@
+@BannerService_HostAddress = http://localhost:5284
+
+GET {{BannerService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
