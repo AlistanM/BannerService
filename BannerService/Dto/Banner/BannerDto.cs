@@ -1,10 +1,13 @@
 ﻿using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
-namespace BannerService.ApiModels
+namespace BannerService.Dto.Banner
 {
     public class BannerDto
     {
+        [JsonProperty("banner_id")]
+        public int BannerId { get; set; }
+
         [JsonProperty("tag_ids")]
         public int[]? TagIds { get; set; }
 
@@ -16,5 +19,11 @@ namespace BannerService.ApiModels
 
         [JsonProperty("is_active")]
         public bool? IsActive { get; set; }
+
+        [JsonProperty("created_at")]
+        public bool? CreatedAt { get; set; }
+
+        [JsonProperty("updated_at")]
+        public bool? UpdatedAt { get; set; }
     }
 }

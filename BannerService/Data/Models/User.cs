@@ -8,6 +8,13 @@ namespace BannerService.Data.Models
     {
         [Key]
         public int Id { get; set; }
-        public string Token { get; set; }
+        [MaxLength(20)]
+        public string Login { get; set; }
+        [MaxLength(20)]
+        public string Password { get; set; }
+
+        [Required]
+        [MaxLength(20)]
+        public string Role { get; set; }
     }
 }

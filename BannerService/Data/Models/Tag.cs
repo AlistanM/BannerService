@@ -9,6 +9,10 @@ namespace BannerService.Data.Models
         [Key]
         public  int Id { get; set; }
         [Required]
+        [MaxLength(30)]
         public string Name { get; set; }
+
+        public List<Banner> Bannners { get; set; }
+
     }
 }
