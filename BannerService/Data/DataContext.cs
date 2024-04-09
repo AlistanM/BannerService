@@ -10,6 +10,7 @@ namespace BannerService.Data
         public DbSet<Banner> Banners { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Feature> Features { get; set; }
+        public DbSet<BannerTag> BannerTag { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

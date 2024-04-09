@@ -46,6 +46,7 @@ namespace BannerService.Controllers
                 Response.StatusCode = 401;
                 await Response.WriteAsync("Пользовательне авторизован");
                 await Response.CompleteAsync();
+                return new BannerDto();
             }
 
             var banner = _bannerService.GetUserBanner(tag_id, feature_id);
@@ -55,6 +56,7 @@ namespace BannerService.Controllers
                 Response.StatusCode = 404;
                 await Response.WriteAsync("Баннер для пользователя не найден");
                 await Response.CompleteAsync();
+                return new BannerDto();
             }
 
             if (!banner.IsActive.Value)
@@ -62,6 +64,7 @@ namespace BannerService.Controllers
                 Response.StatusCode = 404;
                 await Response.WriteAsync("Баннер отключен");
                 await Response.CompleteAsync();
+                return new BannerDto();
             }
 
             return banner;
@@ -70,9 +73,19 @@ namespace BannerService.Controllers
         [HttpGet]
         [Route("banner")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<string> GetBanners([FromQuery] int tag_id, [FromQuery] int feature_id, [FromQuery] int limit = 15, [FromQuery] int offset = 0)
+        public async Task<BannerDto[]> GetBanners([FromQuery] int tag_id, [FromQuery] int feature_id, [FromQuery] int limit = 15, [FromQuery] int offset = 0)
         {
-            return "Ваш админский баннер";
+            if (!User.Identity.IsAuthenticated)
+            {
+                Response.StatusCode = 401;
+                await Response.WriteAsync("Пользовательне авторизован");
+                await Response.CompleteAsync();
+                return Array.Empty<BannerDto>();
+            }
+
+            var banners = _bannerService.GetAdminBanners(tag_id, feature_id);
+
+            return banners;
         }
 
         [HttpPost]
@@ -80,7 +93,7 @@ namespace BannerService.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task CreateBanner([FromBody] BannerDto banner)
         {
-
+            await _bannerService.ToBanner(banner);
         }
 
         [HttpPatch]
@@ -88,7 +101,7 @@ namespace BannerService.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task UpdateBanner([FromBody] BannerDto banner, int id)
         {
-
+            await _bannerService.UpdateBanner(banner, id);
         }
 
         [HttpDelete]
@@ -96,7 +109,7 @@ namespace BannerService.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task DeleteBanner(int id)
         {
-
+            await _bannerService.DeleteBanner(id);
         }
     }
 }

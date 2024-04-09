@@ -12,7 +12,5 @@ namespace BannerService.Data.Models
         [MaxLength(30)]
         public string Name { get; set; }
 
-        public List<Banner> Bannners { get; set; }
-
     }
 }

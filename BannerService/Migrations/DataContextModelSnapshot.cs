@@ -31,15 +31,31 @@ namespace BannerService.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("Date");
 
+                    b.Property<int>("FeaturesId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("Date");
 
                     b.HasKey("Id");
 
                     b.ToTable("Banners");
+                });
+
+            modelBuilder.Entity("BannerService.Data.Models.BannerTag", b =>
+                {
+                    b.Property<int>("BannerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("BannerId", "TagId");
+
+                    b.ToTable("BannerTag");
                 });
 
             modelBuilder.Entity("BannerService.Data.Models.Feature", b =>
@@ -48,17 +64,12 @@ namespace BannerService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("BannerId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BannerId");
 
                     b.ToTable("Features");
                 });
@@ -103,52 +114,6 @@ namespace BannerService.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("BannerTag", b =>
-                {
-                    b.Property<int>("BannnersId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TagsId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("BannnersId", "TagsId");
-
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("BannerTag");
-                });
-
-            modelBuilder.Entity("BannerService.Data.Models.Feature", b =>
-                {
-                    b.HasOne("BannerService.Data.Models.Banner", "Banner")
-                        .WithMany("Features")
-                        .HasForeignKey("BannerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Banner");
-                });
-
-            modelBuilder.Entity("BannerTag", b =>
-                {
-                    b.HasOne("BannerService.Data.Models.Banner", null)
-                        .WithMany()
-                        .HasForeignKey("BannnersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BannerService.Data.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("BannerService.Data.Models.Banner", b =>
-                {
-                    b.Navigation("Features");
                 });
 #pragma warning restore 612, 618
         }

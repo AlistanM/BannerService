@@ -21,9 +21,9 @@ namespace BannerService.Dto.Banner
         public bool? IsActive { get; set; }
 
         [JsonProperty("created_at")]
-        public bool? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
         [JsonProperty("updated_at")]
-        public bool? UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }

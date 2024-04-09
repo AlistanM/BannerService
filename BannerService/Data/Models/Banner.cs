@@ -17,10 +17,9 @@ namespace BannerService.Data.Models
         public DateTime CreatedAt { get; set; }
 
         [Column(TypeName = "Date")]
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
-        public List<Tag> Tags { get; }
-        public List<Feature> Features { get; }
+        public int FeaturesId { get; set; }
 
     }
 }
