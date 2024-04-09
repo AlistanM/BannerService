@@ -14,7 +14,8 @@ namespace BannerService.Services
     {
         private readonly DataContext _db;
         private readonly ClaimService _claimService;
-        public TokenGenerationService(DataContext db, ClaimService claimService) { 
+        public TokenGenerationService(DataContext db, ClaimService claimService)
+        {
             _db = db;
             _claimService = claimService;
         }
@@ -38,7 +39,7 @@ namespace BannerService.Services
                 })
                 .FirstOrDefaultAsync(x => x.Login == dto.Login && x.Password == passwordHash);
 
-            if(user == null)
+            if (user == null)
             {
                 throw new Exception("Неверный логин или пароль");
             }
@@ -47,11 +48,11 @@ namespace BannerService.Services
             _claimService.AddClaims(claims);
 
             var token = new JwtSecurityToken(
-                issuer: ConfigHelper.Issuer, 
+                issuer: ConfigHelper.Issuer,
                 audience: ConfigHelper.Audience,
                 signingCredentials: new SigningCredentials(ConfigHelper.SecurityKey, SecurityAlgorithms.HmacSha256),
-                claims: claims, 
-                notBefore: DateTime.Now, 
+                claims: claims,
+                notBefore: DateTime.Now,
                 expires: DateTime.Now.AddMinutes(60));
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);

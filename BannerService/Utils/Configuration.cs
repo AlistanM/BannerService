@@ -1,8 +1,8 @@
-﻿using BannerService.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using BannerService.Data;
+using BannerService.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using BannerService.Data;
 
 namespace BannerService.Utils
 {

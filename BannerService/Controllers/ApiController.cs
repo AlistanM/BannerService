@@ -1,12 +1,9 @@
 ﻿using BannerService.Consts;
-using BannerService.Data;
-using BannerService.Data.Models;
 using BannerService.Dto.Banner;
 using BannerService.Dto.User;
 using BannerService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BannerService.Controllers
 {
@@ -15,12 +12,11 @@ namespace BannerService.Controllers
     public class ApiController : ControllerBase
     {
         private readonly TokenGenerationService _tokenGenerationService;
-        private readonly DataContext _db;
         private readonly BannerDtoService _bannerService;
-        public ApiController(TokenGenerationService tokenGenerationService, DataContext db, BannerDtoService bannerService)
+
+        public ApiController(TokenGenerationService tokenGenerationService, BannerDtoService bannerService)
         {
             _tokenGenerationService = tokenGenerationService;
-            _db = db;
             _bannerService = bannerService;
         }
 
@@ -39,7 +35,7 @@ namespace BannerService.Controllers
         [HttpGet]
         [Route("user_banner")]
         [Authorize]
-        public async Task<BannerDto> GetBanner([FromQuery] int tag_id, [FromQuery] int feature_id, [FromQuery] bool use_last_revision = false)
+        public async Task<BannerDto> GetBanner([FromQuery] int tagId, [FromQuery] int featureId, [FromQuery] bool useLastRevision = false)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -49,7 +45,7 @@ namespace BannerService.Controllers
                 return new BannerDto();
             }
 
-            var banner = _bannerService.GetUserBanner(tag_id, feature_id);
+            var banner = _bannerService.GetUserBanner(tagId, featureId);
 
             if (banner == null)
             {
@@ -73,7 +69,7 @@ namespace BannerService.Controllers
         [HttpGet]
         [Route("banner")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<BannerDto[]> GetBanners([FromQuery] int tag_id, [FromQuery] int feature_id, [FromQuery] int limit = 15, [FromQuery] int offset = 0)
+        public async Task<BannerDto[]> GetBanners([FromQuery] int tagId, [FromQuery] int featureId, [FromQuery] int limit = 15, [FromQuery] int offset = 0)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -83,7 +79,7 @@ namespace BannerService.Controllers
                 return Array.Empty<BannerDto>();
             }
 
-            var banners = _bannerService.GetAdminBanners(tag_id, feature_id);
+            var banners = _bannerService.GetAdminBanners(tagId, featureId);
 
             return banners;
         }

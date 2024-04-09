@@ -82,11 +82,6 @@ namespace BannerService.Services
             await CreateTag(bannerId, banner.TagIds);
         }
 
-        public async void CreateFeature(int feature_id, Banner banner)
-        {
-
-        }
-
         public async Task CreateTag(int bannerId, int[] tagIds)
         {
             foreach (int id in tagIds)
@@ -108,7 +103,7 @@ namespace BannerService.Services
             var uBanner = new Banner() { Id = id, Content = banner.Content, UpdatedAt = DateTime.Now, FeaturesId = (int)banner.FeatureId, IsActive = (bool)banner.IsActive };
             _db.Attach(uBanner);
 
-            var bannerTag = _db.BannerTag.Where(x=> x.BannerId == id).ToArray();
+            var bannerTag = _db.BannerTag.Where(x => x.BannerId == id).ToArray();
             _db.RemoveRange(bannerTag);
             await CreateTag(id, banner.TagIds);
 
