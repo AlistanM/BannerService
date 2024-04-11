@@ -13,11 +13,13 @@ namespace BannerService.Controllers
     {
         private readonly TokenGenerationService _tokenGenerationService;
         private readonly BannerDtoService _bannerService;
+        private readonly CasheService _casheService;
 
-        public ApiController(TokenGenerationService tokenGenerationService, BannerDtoService bannerService)
+        public ApiController(TokenGenerationService tokenGenerationService, BannerDtoService bannerService, CasheService casheService)
         {
             _tokenGenerationService = tokenGenerationService;
             _bannerService = bannerService;
+            _casheService = casheService;
         }
 
         [HttpPost]
@@ -40,12 +42,21 @@ namespace BannerService.Controllers
             if (!User.Identity.IsAuthenticated)
             {
                 Response.StatusCode = 401;
-                await Response.WriteAsync("Пользовательне авторизован");
+                await Response.WriteAsync("Пользователь не авторизован");
                 await Response.CompleteAsync();
                 return new BannerDto();
             }
 
-            var banner = _bannerService.GetUserBanner(tagId, featureId);
+            var banner = new BannerDto();
+            
+            if(useLastRevision == true)
+            {
+                var cashe = CasheService.uCashe.bannerCashe;
+                await _bannerService.UpdateBanner(cashe);
+            }
+
+            banner = _casheService.GetUserBanner(tagId, featureId);
+
 
             if (banner == null)
             {
@@ -79,7 +90,7 @@ namespace BannerService.Controllers
                 return Array.Empty<BannerDto>();
             }
 
-            var banners = _bannerService.GetAdminBanners(tagId, featureId);
+            var banners = _bannerService.GetAdminBanners(tagId, featureId, limit);
 
             return banners;
         }
@@ -97,7 +108,7 @@ namespace BannerService.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task UpdateBanner([FromBody] BannerDto banner, int id)
         {
-            await _bannerService.UpdateBanner(banner, id);
+            await _casheService.UpdateBanner(banner, id);
         }
 
         [HttpDelete]

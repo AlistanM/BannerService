@@ -1,44 +1,47 @@
 ﻿using BannerService.Data;
 using BannerService.Data.Models;
 using BannerService.Dto.Banner;
+using System.Reflection;
 
 namespace BannerService.Services
 {
     public class BannerDtoService
     {
         private readonly DataContext _db;
-        public BannerDtoService(TokenGenerationService tokenGenerationService, DataContext db)
+        public BannerDtoService(DataContext db)
         {
             _db = db;
         }
 
-        public BannerDto? GetUserBanner(int tag_id, int feature_id)
+        public KeyValuePair<BannerTag, Banner>? GetUserBanner(int tagId, int featureId)
         {
             var banner = _db.Banners
-                .Where(fid => fid.FeaturesId == feature_id)
+                .Where(fid => fid.FeaturesId == featureId)
                 .Join(_db.BannerTag,
                 bid => bid.Id,
                 tid => tid.BannerId,
                 (bid, tid) => new { Bid = bid, Tid = tid })
-                .Where(x => x.Tid.TagId == tag_id && x.Tid.BannerId == x.Bid.Id).FirstOrDefault();
-
+                .Where(x => x.Tid.TagId == tagId && x.Tid.BannerId == x.Bid.Id).FirstOrDefault();
 
             if (banner == null)
             {
                 return null;
             }
-            return new BannerDto { BannerId = banner.Bid.Id, Content = banner.Bid.Content, IsActive = banner.Bid.IsActive };
+
+            var tag = _db.BannerTag.Where(x => x.BannerId == banner.Bid.Id && x.TagId == banner.Tid.TagId).FirstOrDefault();
+
+            return new KeyValuePair<BannerTag, Banner>(tag, banner.Bid);
         }
 
-        public BannerDto[]? GetAdminBanners(int tag_id, int feature_id)
+        public BannerDto[]? GetAdminBanners(int tagId, int featureId, int limit)
         {
             var banners = _db.Banners
-                .Where(fid => fid.FeaturesId == feature_id)
+                .Where(fid => fid.FeaturesId == featureId)
                 .Join(_db.BannerTag,
                 bid => bid.Id,
                 tid => tid.BannerId,
                 (bid, tid) => new { Bid = bid, Tid = tid })
-                .Where(x => x.Tid.TagId == tag_id && x.Tid.BannerId == x.Bid.Id)
+                .Where(x => x.Tid.TagId == tagId && x.Tid.BannerId == x.Bid.Id)
                 .Select(newBanner => new BannerDto
                 {
                     BannerId = newBanner.Bid.Id,
@@ -49,7 +52,7 @@ namespace BannerService.Services
                     UpdatedAt = newBanner.Bid.UpdatedAt,
                     TagIds = _db.BannerTag.Where(x => x.BannerId == newBanner.Bid.Id).Select(y => y.TagId).ToArray()
                 }
-                ).ToArray();
+                ).Take(limit).ToArray();
 
 
             if (banners == null)
@@ -98,17 +101,31 @@ namespace BannerService.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateBanner(BannerDto banner, int id)
+        public async Task UpdateBanner(Dictionary<int,BannerDto> cashe)
         {
-            var uBanner = new Banner() { Id = id, Content = banner.Content, UpdatedAt = DateTime.Now, FeaturesId = (int)banner.FeatureId, IsActive = (bool)banner.IsActive };
-            _db.Attach(uBanner);
+            var banners = new List<Banner>();
 
-            var bannerTag = _db.BannerTag.Where(x => x.BannerId == id).ToArray();
-            _db.RemoveRange(bannerTag);
-            await CreateTag(id, banner.TagIds);
+            foreach(var b in cashe)
+            {
+                var ub = new Banner()
+                {
+                    Id = b.Key,
+                    Content = b.Value.Content,
+                    UpdatedAt = DateTime.Now,
+                    FeaturesId = (int)b.Value.FeatureId,
+                    IsActive = (bool)b.Value.IsActive
+                };
+                banners.Add(ub);
 
-            _db.Banners.Update(uBanner);
-            _db.Entry(uBanner).Property(x => x.CreatedAt).IsModified = false;
+                var bannerTag = _db.BannerTag.Where(x => x.BannerId == b.Key).ToArray();
+                _db.RemoveRange(bannerTag);
+                await CreateTag(b.Key, b.Value.TagIds);
+            }
+
+            _db.AttachRange(banners);
+            _db.Banners.UpdateRange(banners);
+            foreach(var b in banners)
+                _db.Entry(b).Property(x => x.CreatedAt).IsModified = false;
 
             await _db.SaveChangesAsync();
         }

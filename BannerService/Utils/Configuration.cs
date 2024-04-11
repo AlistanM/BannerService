@@ -1,4 +1,5 @@
 ﻿using BannerService.Data;
+using BannerService.Jobs;
 using BannerService.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -6,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BannerService.Utils
 {
-    public class Configuration
+    public static class Configuration
     {
         public static void ConfigureServices(IServiceCollection services, IWebHostEnvironment env)
         {
@@ -16,7 +17,7 @@ namespace BannerService.Utils
 
             var config = configuration.Build();
             ConfigHelper.Init(config);
-
+            AddJobs(services);
             AddServices(services, config);
             AddAuthentication(services);
         }
@@ -47,6 +48,12 @@ namespace BannerService.Utils
             services.AddScoped<ClaimService>();
             services.AddScoped<TokenGenerationService>();
             services.AddScoped<BannerDtoService>();
+            services.AddScoped<CasheService>();
+        }
+
+        private static void AddJobs(this IServiceCollection services)
+        {
+            services.AddTransient<UpdateJob>();
         }
 
     }
