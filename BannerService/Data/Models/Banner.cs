@@ -20,5 +20,6 @@ namespace BannerService.Data.Models
 
         public int FeaturesId { get; set; }
 
+        public bool IsDeleted { get; set; }
     }
 }

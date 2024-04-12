@@ -118,5 +118,13 @@ namespace BannerService.Controllers
         {
             await _bannerService.DeleteBanner(id);
         }
+
+        [HttpDelete]
+        [Route("delete_banner")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task DeleteBannerByTagAndFeature([FromQuery] int featureId, [FromQuery] int tagId)
+        {
+            await _bannerService.DeleteBannerByTagAndFeature(featureId, tagId);
+        }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using BannerService.Data;
 using BannerService.Data.Models;
 using BannerService.Dto.Banner;
-using System.Reflection;
 
 namespace BannerService.Services
 {
@@ -23,7 +22,7 @@ namespace BannerService.Services
                 (bid, tid) => new { Bid = bid, Tid = tid })
                 .Where(x => x.Tid.TagId == tagId && x.Tid.BannerId == x.Bid.Id).FirstOrDefault();
 
-            if (banner == null)
+            if (banner == null || banner.Bid.IsDeleted == true)
             {
                 return null;
             }
@@ -50,6 +49,7 @@ namespace BannerService.Services
                     FeatureId = newBanner.Bid.FeaturesId,
                     CreatedAt = newBanner.Bid.CreatedAt,
                     UpdatedAt = newBanner.Bid.UpdatedAt,
+                    IsDeleted = newBanner.Bid.IsDeleted,
                     TagIds = _db.BannerTag.Where(x => x.BannerId == newBanner.Bid.Id).Select(y => y.TagId).ToArray()
                 }
                 ).Take(limit).ToArray();
@@ -101,11 +101,11 @@ namespace BannerService.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateBanner(Dictionary<int,BannerDto> cashe)
+        public async Task UpdateBanner(Dictionary<int, BannerDto> cashe)
         {
             var banners = new List<Banner>();
 
-            foreach(var b in cashe)
+            foreach (var b in cashe)
             {
                 var ub = new Banner()
                 {
@@ -124,7 +124,7 @@ namespace BannerService.Services
 
             _db.AttachRange(banners);
             _db.Banners.UpdateRange(banners);
-            foreach(var b in banners)
+            foreach (var b in banners)
                 _db.Entry(b).Property(x => x.CreatedAt).IsModified = false;
 
             await _db.SaveChangesAsync();
@@ -133,12 +133,38 @@ namespace BannerService.Services
         public async Task DeleteBanner(int id)
         {
             var banner = _db.Banners.Where(x => x.Id == id).FirstOrDefault();
-            _db.Banners.Remove(banner);
+            banner.IsDeleted = true;
 
-            var bannerTag = _db.BannerTag.Where(x => x.BannerId == id).ToArray();
-            _db.RemoveRange(bannerTag);
+            _db.Banners.Update(banner);
 
             await _db.SaveChangesAsync();
+        }
+
+        public async Task DeleteBannerByTagAndFeature(int featureId = 0, int tagId = 0)
+        {
+            if (tagId == 0)
+            {
+                var banners = _db.Banners.Where(x => x.FeaturesId == featureId).ToArray();
+
+                foreach (var b in banners)
+                {
+                    await DeleteBanner(b.Id);
+                }
+            }
+
+            if (featureId == 0)
+            {
+                var bannerTag = _db.BannerTag.Where(x => x.TagId == tagId).ToArray();
+                foreach (var b in bannerTag)
+                {
+                    await DeleteBanner(b.BannerId);
+                }
+            }
+            if (tagId != 0 && featureId != 0)
+            {
+                var banner = GetUserBanner(tagId, featureId);
+                await DeleteBanner(banner.Value.Value.Id);
+            }
         }
     }
 }

@@ -24,5 +24,7 @@ namespace BannerService.Dto.Banner
 
         [JsonProperty("updated_at")]
         public DateTime? UpdatedAt { get; set; }
+
+        public bool IsDeleted { get; set; }
     }
 }
