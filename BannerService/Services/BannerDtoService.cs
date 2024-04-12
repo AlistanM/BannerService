@@ -63,7 +63,7 @@ namespace BannerService.Services
             return banners;
         }
 
-        public async Task ToBanner(BannerDto banner)
+        public async Task CreateBanner(BannerDto banner)
         {
             if (!_db.Features.Any(x => x.Id == banner.FeatureId))
             {

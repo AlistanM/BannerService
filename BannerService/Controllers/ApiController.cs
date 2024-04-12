@@ -100,7 +100,7 @@ namespace BannerService.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task CreateBanner([FromBody] BannerDto banner)
         {
-            await _bannerService.ToBanner(banner);
+            await _bannerService.CreateBanner(banner);
         }
 
         [HttpPatch]
