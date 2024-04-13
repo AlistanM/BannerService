@@ -3,6 +3,7 @@ using System;
 using BannerService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BannerService.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240413134116_AddForeignKeys")]
+    partial class AddForeignKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
@@ -44,8 +47,6 @@ namespace BannerService.Migrations
                         .HasColumnType("Date");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FeaturesId");
 
                     b.ToTable("Banners");
                 });
@@ -121,17 +122,6 @@ namespace BannerService.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("BannerService.Data.Models.Banner", b =>
-                {
-                    b.HasOne("BannerService.Data.Models.Feature", "Feature")
-                        .WithMany()
-                        .HasForeignKey("FeaturesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Feature");
                 });
 
             modelBuilder.Entity("BannerService.Data.Models.BannerTag", b =>

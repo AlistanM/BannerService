@@ -48,7 +48,7 @@ namespace BannerService.Utils
             services.AddScoped<ClaimService>();
             services.AddScoped<TokenGenerationService>();
             services.AddScoped<BannerDtoService>();
-            services.AddScoped<CasheService>();
+            services.AddScoped<CacheService>();
         }
 
         private static void AddJobs(this IServiceCollection services)

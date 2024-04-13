@@ -14,7 +14,7 @@ namespace BannerService.Jobs
 
             IJobDetail updateJob = JobBuilder.Create<UpdateJob>().Build();
             ITrigger updateTrigger = TriggerBuilder.Create()
-                .WithIdentity("trigger1", "group1")
+                .WithIdentity("EveryTenSecondsTrigger", "UpdateGroup")
                 .WithCronSchedule("10 * * * * ?", x => x
                     .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time")))
                 .Build();

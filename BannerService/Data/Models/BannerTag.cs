@@ -9,5 +9,9 @@ namespace BannerService.Data.Models
     {
         public int BannerId { get; set; }
         public int TagId { get; set; }
+        [ForeignKey(nameof(BannerId))]
+        public Banner Banner { get; set; }
+        [ForeignKey(nameof(TagId))]
+        public Tag Tag { get; set; }
     }
 }

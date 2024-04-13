@@ -24,7 +24,7 @@ namespace BannerService.Services
         {
             if (string.IsNullOrEmpty(dto.Login) || string.IsNullOrEmpty(dto.Password))
             {
-                throw new Exception("Не введен логин или пароль");
+                throw new Exception("No login or password has been entered");
             }
 
             var passwordHash = EncodingUtil.EncodePassword(dto.Password);
@@ -41,7 +41,7 @@ namespace BannerService.Services
 
             if (user == null)
             {
-                throw new Exception("Неверный логин или пароль");
+                throw new Exception("Invalid username or password");
             }
 
             var claims = CreateClaims(user);

@@ -15,7 +15,7 @@ namespace BannerService.Services
         public KeyValuePair<BannerTag, Banner>? GetUserBanner(int tagId, int featureId)
         {
             var banner = _db.Banners
-                .Where(fid => fid.FeaturesId == featureId)
+                .Where(fid => fid.FeatureId == featureId)
                 .Join(_db.BannerTag,
                 bid => bid.Id,
                 tid => tid.BannerId,
@@ -35,7 +35,7 @@ namespace BannerService.Services
         public BannerDto[]? GetAdminBanners(int tagId, int featureId, int limit)
         {
             var banners = _db.Banners
-                .Where(fid => fid.FeaturesId == featureId)
+                .Where(fid => fid.FeatureId == featureId)
                 .Join(_db.BannerTag,
                 bid => bid.Id,
                 tid => tid.BannerId,
@@ -46,7 +46,7 @@ namespace BannerService.Services
                     BannerId = newBanner.Bid.Id,
                     Content = newBanner.Bid.Content,
                     IsActive = newBanner.Bid.IsActive,
-                    FeatureId = newBanner.Bid.FeaturesId,
+                    FeatureId = newBanner.Bid.FeatureId,
                     CreatedAt = newBanner.Bid.CreatedAt,
                     UpdatedAt = newBanner.Bid.UpdatedAt,
                     IsDeleted = newBanner.Bid.IsDeleted,
@@ -67,12 +67,12 @@ namespace BannerService.Services
         {
             if (!_db.Features.Any(x => x.Id == banner.FeatureId))
             {
-                throw new Exception("Фича с таким id не найдена");
+                throw new Exception("The feature with this id was not found");
             }
 
             var newBanner = new Banner()
             {
-                FeaturesId = (int)banner.FeatureId,
+                FeatureId = (int)banner.FeatureId,
                 Content = banner.Content,
                 CreatedAt = DateTime.Now,
                 IsActive = (bool)banner.IsActive
@@ -91,7 +91,7 @@ namespace BannerService.Services
             {
                 if (!_db.Tags.Any(x => x.Id == id))
                 {
-                    throw new Exception("Тэг с таким id не найден");
+                    throw new Exception("The tag with this id was not found");
                 }
 
                 var bt = new BannerTag() { BannerId = bannerId, TagId = id };
@@ -101,18 +101,18 @@ namespace BannerService.Services
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateBanner(Dictionary<int, BannerDto> cashe)
+        public async Task UpdateBanner(Dictionary<int, BannerDto> cache)
         {
             var banners = new List<Banner>();
 
-            foreach (var b in cashe)
+            foreach (var b in cache)
             {
                 var ub = new Banner()
                 {
                     Id = b.Key,
                     Content = b.Value.Content,
                     UpdatedAt = DateTime.Now,
-                    FeaturesId = (int)b.Value.FeatureId,
+                    FeatureId = (int)b.Value.FeatureId,
                     IsActive = (bool)b.Value.IsActive
                 };
                 banners.Add(ub);
@@ -144,7 +144,7 @@ namespace BannerService.Services
         {
             if (tagId == 0)
             {
-                var banners = _db.Banners.Where(x => x.FeaturesId == featureId).ToArray();
+                var banners = _db.Banners.Where(x => x.FeatureId == featureId).ToArray();
 
                 foreach (var b in banners)
                 {

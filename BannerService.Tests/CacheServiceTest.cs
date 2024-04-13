@@ -6,13 +6,13 @@ using BannerService.Dto.Banner;
 namespace BannerService.Tests
 {
     [TestFixture]
-    public class CasheServiceTest
+    public class CacheServiceTest
     {
-        private readonly CasheService _casheService;
+        private readonly CacheService _cacheService;
 
-        public CasheServiceTest(CasheService casheService)
+        public CacheServiceTest(CacheService cacheService)
         {
-            _casheService = casheService;
+            _cacheService = cacheService;
         }
 
         [Test]
@@ -21,7 +21,7 @@ namespace BannerService.Tests
             var tagId = 3;
             var featureId = 5;
 
-            var banner = _casheService.GetUserBanner(tagId, featureId);
+            var banner = _cacheService.GetUserBanner(tagId, featureId);
             Assert.NotNull(banner);
         }
 
@@ -31,7 +31,7 @@ namespace BannerService.Tests
             var tagId = 0;
             var featureId = -1;
 
-            var banner = _casheService.GetUserBanner(tagId, featureId);
+            var banner = _cacheService.GetUserBanner(tagId, featureId);
             Assert.Null(banner);
         }
     }

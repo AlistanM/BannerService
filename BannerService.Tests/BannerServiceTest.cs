@@ -55,7 +55,7 @@ namespace BannerService.Tests
             await _bannerService.CreateBanner(banner);
             var b = _bannerService.GetUserBanner(1, -1);
 
-            Assert.Equal(b.Value.Value.FeaturesId, banner.FeatureId);
+            Assert.Equal(b.Value.Value.FeatureId, banner.FeatureId);
 
             await _bannerService.DeleteBanner(b.Value.Value.Id);
         }

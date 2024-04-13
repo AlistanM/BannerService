@@ -13,13 +13,13 @@ namespace BannerService.Controllers
     {
         private readonly TokenGenerationService _tokenGenerationService;
         private readonly BannerDtoService _bannerService;
-        private readonly CasheService _casheService;
+        private readonly CacheService _cacheService;
 
-        public ApiController(TokenGenerationService tokenGenerationService, BannerDtoService bannerService, CasheService casheService)
+        public ApiController(TokenGenerationService tokenGenerationService, BannerDtoService bannerService, CacheService cacheService)
         {
             _tokenGenerationService = tokenGenerationService;
             _bannerService = bannerService;
-            _casheService = casheService;
+            _cacheService = cacheService;
         }
 
         [HttpPost]
@@ -28,7 +28,7 @@ namespace BannerService.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                throw new Exception("Пользователь уже авторизован");
+                throw new Exception("User authorized");
             }
 
             return await _tokenGenerationService.Login(user);
@@ -51,11 +51,11 @@ namespace BannerService.Controllers
             
             if(useLastRevision == true)
             {
-                var cashe = CasheService.uCashe.bannerCashe;
-                await _bannerService.UpdateBanner(cashe);
+                var cache = CacheService.UCache.BannerCache;
+                await _bannerService.UpdateBanner(cache);
             }
 
-            banner = _casheService.GetUserBanner(tagId, featureId);
+            banner = _cacheService.GetUserBanner(tagId, featureId);
 
 
             if (banner == null)
@@ -108,7 +108,7 @@ namespace BannerService.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task UpdateBanner([FromBody] BannerDto banner, int id)
         {
-            await _casheService.UpdateBanner(banner, id);
+            await _cacheService.UpdateBanner(banner, id);
         }
 
         [HttpDelete]

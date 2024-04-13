@@ -1,16 +1,16 @@
-﻿using BannerService.Cashe;
+﻿using BannerService.Cache;
 using BannerService.Data.Models;
 using BannerService.Dto.Banner;
 
 namespace BannerService.Services
 {
-    public class CasheService
+    public class CacheService
     {
         private readonly BannerDtoService _bannerService;
-        private static GetCashe cashe = new GetCashe();
-        public static UpdateCashe uCashe = new UpdateCashe();
+        private static GetCache cache = new GetCache();
+        public static UpdateCache UCache = new UpdateCache();
 
-        public CasheService(BannerDtoService bannerService)
+        public CacheService(BannerDtoService bannerService)
         {
             _bannerService = bannerService;
         }
@@ -18,11 +18,11 @@ namespace BannerService.Services
         public BannerDto? GetUserBanner(int tag_id, int feature_id)
         {
 
-            foreach (Banner banner in cashe.bannerCashe.Values)
+            foreach (Banner banner in cache.BannerCache.Values)
             {
-                if (banner.FeaturesId == feature_id)
+                if (banner.FeatureId == feature_id)
                 {
-                    foreach (BannerTag btag in cashe.bannerCashe.Keys)
+                    foreach (BannerTag btag in cache.BannerCache.Keys)
                     {
                         if (btag.BannerId == banner.Id)
                         {
@@ -39,14 +39,14 @@ namespace BannerService.Services
                 return null;
             }
 
-            cashe.bannerCashe.Add(dbBanner.Value.Key, dbBanner.Value.Value);
+            cache.BannerCache.Add(dbBanner.Value.Key, dbBanner.Value.Value);
             return new BannerDto { BannerId = dbBanner.Value.Value.Id, Content = dbBanner.Value.Value.Content, IsActive = dbBanner.Value.Value.IsActive };
         }
 
 
         public async Task UpdateBanner(BannerDto banner, int id)
         {
-            uCashe.bannerCashe.Add(id, banner);
+            UCache.BannerCache.Add(id, banner);
         }
     }
 }
